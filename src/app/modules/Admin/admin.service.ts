@@ -1,8 +1,7 @@
 import { Prisma, PrismaClient } from "../../../../generated/prisma"
 import calculatePagination from "../../../helpers/paginationHelper"
+import prisma from "../../../shared/prisma"
 import { adminSearchableFields } from "./admin.constant"
-
-const prisma = new PrismaClient()
 
 const getAllAdmins = async (params: any, options: any) => {
   const { limit, page, skip } = calculatePagination(options)
