@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.18",
     "@types/express": "^5.0.2",
     "@types/node": "^22.15.24",
@@ -20,6 +21,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "express": "^5.1.0"
   }
