@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "../../../../generated/prisma"
+import { Admin, Prisma, PrismaClient } from "../../../../generated/prisma"
 import calculatePagination from "../../../helpers/paginationHelper"
 import prisma from "../../../shared/prisma"
 import { adminSearchableFields } from "./admin.constant"
@@ -44,9 +44,72 @@ const getAllAdmins = async (params: any, options: any) => {
             createdAt: "desc",
           },
   })
-  return admins
+
+  const total = await prisma.admin.count({
+    where: whereConditions,
+  })
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+    data: admins,
+  }
 }
 
+const getAdminById = async (id: string) => {
+  const admin = await prisma.admin.findUnique({
+    where: { id },
+  })
+  if (!admin) {
+    throw new Error("Admin not found")
+  }
+  return admin
+}
+
+const updateAdminById = async (id: string, data: Partial<Admin>) => {
+  const existingAdmin = await prisma.admin.findUnique({
+    where: { id },
+  })
+
+  if (!existingAdmin) {
+    throw new Error("Admin not found")
+  }
+
+  const updatedAdmin = await prisma.admin.update({
+    where: { id },
+    data,
+  })
+
+  return updatedAdmin
+}
+
+const deleteAdmin = async (id: string) => {
+  const existingAdmin = await prisma.admin.findUnique({
+    where: { id },
+  })
+
+  if (!existingAdmin) {
+    throw new Error("Admin not found")
+  }
+
+  await prisma.$transaction(async (prisma) => {
+    await prisma.admin.delete({
+      where: { id },
+    })
+
+    await prisma.user.delete({
+      where: { email: existingAdmin.email },
+    })
+  })
+
+  return { message: "Admin deleted successfully" }
+}
 export const AdminService = {
   getAllAdmins,
+  getAdminById,
+  updateAdminById,
+  deleteAdmin,
 }
