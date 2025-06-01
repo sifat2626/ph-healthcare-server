@@ -3,6 +3,7 @@ import cors from "cors"
 import { UserRoutes } from "./app/modules/User/user.route"
 import { AdminRoutes } from "./app/modules/Admin/admin.route"
 import router from "./app/routes"
+import globalErrorHandler from "./middlewares/globalErrorHandler"
 
 const app: Application = express()
 app.use(cors())
@@ -17,5 +18,6 @@ app.get("/", (req: Request, res: Response) => {
 })
 
 app.use("/api/v1", router)
+app.use(globalErrorHandler)
 
 export default app

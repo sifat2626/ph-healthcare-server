@@ -1,11 +1,15 @@
-import { Request, Response } from "express"
+import { NextFunction, Request, Response } from "express"
 import { AdminService } from "./admin.service"
 import pick from "../../../shared/pick"
 import { adminFilterableFields } from "./admin.constant"
 import { json } from "stream/consumers"
 import sendResponse from "../../../shared/sendResponse"
 
-const getAllAdmins = async (req: Request, res: Response) => {
+const getAllAdmins = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const filters = pick(req.query, adminFilterableFields)
     const options = pick(req.query, ["sortBy", "sortOrder", "limit", "page"])
@@ -18,15 +22,15 @@ const getAllAdmins = async (req: Request, res: Response) => {
       data: admins.data,
     })
   } catch (error) {
-    res.status(500).json({
-      message: "Failed to retrieve admins",
-      error: error instanceof Error ? error.message : "Unknown error",
-      success: false,
-    })
+    next(error)
   }
 }
 
-const getAdminById = async (req: Request, res: Response) => {
+const getAdminById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { id } = req.params
     const admin = await AdminService.getAdminById(id)
@@ -37,15 +41,15 @@ const getAdminById = async (req: Request, res: Response) => {
       data: admin,
     })
   } catch (error) {
-    res.status(500).json({
-      message: "Failed to retrieve admin",
-      error: error instanceof Error ? error.message : "Unknown error",
-      success: false,
-    })
+    next(error)
   }
 }
 
-const updateAdminById = async (req: Request, res: Response) => {
+const updateAdminById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { id } = req.params
     const data = req.body
@@ -57,15 +61,11 @@ const updateAdminById = async (req: Request, res: Response) => {
       data: updatedAdmin,
     })
   } catch (error) {
-    res.status(500).json({
-      message: "Failed to update admin",
-      error: error instanceof Error ? error.message : "Unknown error",
-      success: false,
-    })
+    next(error)
   }
 }
 
-const deleteAdmin = async (req: Request, res: Response) => {
+const deleteAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params
     const result = await AdminService.deleteAdmin(id)
@@ -76,15 +76,15 @@ const deleteAdmin = async (req: Request, res: Response) => {
       data: result,
     })
   } catch (error) {
-    res.status(500).json({
-      message: "Failed to delete admin",
-      error: error instanceof Error ? error.message : "Unknown error",
-      success: false,
-    })
+    next(error)
   }
 }
 
-const softDeleteAdmin = async (req: Request, res: Response) => {
+const softDeleteAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { id } = req.params
     const updatedAdmin = await AdminService.softDeleteAdmin(id)
@@ -95,11 +95,7 @@ const softDeleteAdmin = async (req: Request, res: Response) => {
       data: updatedAdmin,
     })
   } catch (error) {
-    res.status(500).json({
-      message: "Failed to soft delete admin",
-      error: error instanceof Error ? error.message : "Unknown error",
-      success: false,
-    })
+    next(error)
   }
 }
 
