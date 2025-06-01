@@ -35,6 +35,10 @@ const getAllAdmins = async (params: any, options: any) => {
     })
   }
 
+  andConditions.push({
+    isDeleted: false,
+  })
+
   const whereConditions: Prisma.AdminWhereInput = { AND: andConditions }
   const admins = await prisma.admin.findMany({
     where: whereConditions,
@@ -64,9 +68,9 @@ const getAllAdmins = async (params: any, options: any) => {
   }
 }
 
-const getAdminById = async (id: string) => {
+const getAdminById = async (id: string): Promise<Admin | null> => {
   const admin = await prisma.admin.findUnique({
-    where: { id },
+    where: { id, isDeleted: false },
   })
   if (!admin) {
     throw new Error("Admin not found")
@@ -74,7 +78,10 @@ const getAdminById = async (id: string) => {
   return admin
 }
 
-const updateAdminById = async (id: string, data: Partial<Admin>) => {
+const updateAdminById = async (
+  id: string,
+  data: Partial<Admin>
+): Promise<Admin> => {
   const existingAdmin = await prisma.admin.findUnique({
     where: { id },
   })
@@ -91,7 +98,7 @@ const updateAdminById = async (id: string, data: Partial<Admin>) => {
   return updatedAdmin
 }
 
-const deleteAdmin = async (id: string) => {
+const deleteAdmin = async (id: string): Promise<Admin | null> => {
   const existingAdmin = await prisma.admin.findUnique({
     where: { id },
   })
@@ -100,22 +107,24 @@ const deleteAdmin = async (id: string) => {
     throw new Error("Admin not found")
   }
 
-  await prisma.$transaction(async (prisma) => {
-    await prisma.admin.delete({
+  const result = await prisma.$transaction(async (prisma) => {
+    const deletedAdmin = await prisma.admin.delete({
       where: { id },
     })
 
     await prisma.user.delete({
       where: { email: existingAdmin.email },
     })
+
+    return deletedAdmin
   })
 
-  return { message: "Admin deleted successfully" }
+  return result
 }
 
 const softDeleteAdmin = async (id: string) => {
   const existingAdmin = await prisma.admin.findUnique({
-    where: { id },
+    where: { id, isDeleted: false },
   })
   if (!existingAdmin) {
     throw new Error("Admin not found")
