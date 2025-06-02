@@ -1,11 +1,11 @@
-import { NextFunction, Request, Response } from "express"
+import { NextFunction, Request, RequestHandler, Response } from "express"
 import { AdminService } from "./admin.service"
 import pick from "../../../shared/pick"
 import { adminFilterableFields } from "./admin.constant"
 import { json } from "stream/consumers"
 import sendResponse from "../../../shared/sendResponse"
 
-const getAllAdmins = async (
+const getAllAdmins: RequestHandler = async (
   req: Request,
   res: Response,
   next: NextFunction
