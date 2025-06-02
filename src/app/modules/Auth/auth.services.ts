@@ -1,7 +1,8 @@
 import prisma from "../../../shared/prisma"
 import bcrypt from "bcrypt"
-import jwt from "jsonwebtoken"
-import { generateToken } from "../../../helpers/jwtHelpers"
+import jwt, { JwtPayload } from "jsonwebtoken"
+import { generateToken, verifyToken } from "../../../helpers/jwtHelpers"
+import { UserStatus } from "../../../../generated/prisma"
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const { email, password } = payload
@@ -35,8 +36,37 @@ const loginUser = async (payload: { email: string; password: string }) => {
   }
 }
 
-const refreshToken = async (token: string) => {}
+const refreshToken = async (token: string) => {
+  let decodedData
+  try {
+    decodedData = verifyToken(
+      token,
+      "process.env.JWT_REFRESH_SECRET as string"
+    ) as JwtPayload
+  } catch (error) {
+    throw new Error("Invalid refresh token")
+  }
+
+  const user = await prisma.user.findUniqueOrThrow({
+    where: { id: decodedData.id, status: UserStatus.ACTIVE },
+  })
+  if (!user) {
+    throw new Error("User not found")
+  }
+
+  const accessToken = generateToken(
+    user,
+    "process.env.JWT_ACCESS_SECRET as string",
+    "1h"
+  )
+
+  return {
+    accessToken,
+    needsPasswordChange: user.needsPasswordChange,
+  }
+}
 
 export const AuthServices = {
   loginUser,
+  refreshToken,
 }

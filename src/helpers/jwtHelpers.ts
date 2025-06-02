@@ -1,6 +1,6 @@
-import jwt from "jsonwebtoken"
+import jwt, { Secret } from "jsonwebtoken"
 
-export const generateToken = (user: any, secret: string, expiresIn: any) => {
+export const generateToken = (user: any, secret: Secret, expiresIn: any) => {
   const token = jwt.sign(
     {
       id: user.id,
@@ -14,4 +14,13 @@ export const generateToken = (user: any, secret: string, expiresIn: any) => {
   )
 
   return token
+}
+
+export const verifyToken = (token: string, secret: Secret) => {
+  try {
+    const decoded = jwt.verify(token, secret)
+    return decoded
+  } catch (error) {
+    throw new Error("Invalid token")
+  }
 }
