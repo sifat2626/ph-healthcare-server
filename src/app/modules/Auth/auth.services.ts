@@ -1,22 +1,7 @@
 import prisma from "../../../shared/prisma"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-
-const generateToken = (user: any, secret: string, expiresIn: any) => {
-  const token = jwt.sign(
-    {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    },
-    secret,
-    {
-      expiresIn,
-    }
-  )
-
-  return token
-}
+import { generateToken } from "../../../helpers/jwtHelpers"
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const { email, password } = payload
@@ -49,6 +34,8 @@ const loginUser = async (payload: { email: string; password: string }) => {
     needsPasswordChange: user.needsPasswordChange,
   }
 }
+
+const refreshToken = async (token: string) => {}
 
 export const AuthServices = {
   loginUser,

@@ -3,7 +3,7 @@ import sendResponse from "../../../shared/sendResponse"
 import { AuthServices } from "./auth.services"
 
 const loginUser = catchAsync(async (req, res, next) => {
-  const user: any = AuthServices.loginUser(req.body)
+  const user: any = await AuthServices.loginUser(req.body)
 
   const { refreshToken } = user
 
@@ -24,6 +24,17 @@ const loginUser = catchAsync(async (req, res, next) => {
   })
 })
 
+const refreshToken = catchAsync(async (req, res, next) => {
+  const { refreshToken } = req.cookies
+
+  sendResponse(res, {
+    statusCode: 200,
+    message: "Refresh token retrieved successfully",
+    data: { refreshToken },
+  })
+})
+
 export const AuthController = {
   loginUser,
+  refreshToken,
 }
