@@ -7,7 +7,7 @@ const globalErrorHandler = (
   next: NextFunction
 ) => {
   res.status(500).json({
-    message: "Internal Server Error",
+    message: error.message,
     error: error,
     success: false,
   })
