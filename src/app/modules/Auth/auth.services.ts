@@ -3,6 +3,7 @@ import bcrypt from "bcrypt"
 import jwt, { JwtPayload } from "jsonwebtoken"
 import { generateToken, verifyToken } from "../../../helpers/jwtHelpers"
 import { UserStatus } from "../../../../generated/prisma"
+import config from "../../../config"
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const { email, password } = payload
@@ -19,14 +20,14 @@ const loginUser = async (payload: { email: string; password: string }) => {
 
   const accessToken = generateToken(
     user,
-    "process.env.JWT_ACCESS_SECRET as string",
-    "1h"
+    config.jwt.jwt_secret as string,
+    config.jwt.expires_in as string
   )
 
   const refreshToken = generateToken(
     user,
-    "process.env.JWT_REFRESH_SECRET as string",
-    "7d"
+    config.jwt.refresh_token_secret as string,
+    config.jwt.refresh_token_expires_in as string
   )
 
   return {
@@ -41,7 +42,7 @@ const refreshToken = async (token: string) => {
   try {
     decodedData = verifyToken(
       token,
-      "process.env.JWT_REFRESH_SECRET as string"
+      config.jwt.refresh_token_secret as string
     ) as JwtPayload
   } catch (error) {
     throw new Error("Invalid refresh token")
@@ -56,8 +57,8 @@ const refreshToken = async (token: string) => {
 
   const accessToken = generateToken(
     user,
-    "process.env.JWT_ACCESS_SECRET as string",
-    "1h"
+    config.jwt.jwt_secret as string,
+    config.jwt.expires_in as string
   )
 
   return {
