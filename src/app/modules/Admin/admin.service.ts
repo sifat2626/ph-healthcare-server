@@ -6,6 +6,7 @@ import {
 } from "../../../../generated/prisma"
 import calculatePagination from "../../../helpers/paginationHelper"
 import prisma from "../../../shared/prisma"
+import ApiError from "../../Errors/apiError"
 import { IPaginationOptions } from "../../interfaces/pagination"
 import { adminSearchableFields } from "./admin.constant"
 import { IAdminFilterRequest } from "./admin.interface"
@@ -78,7 +79,7 @@ const getAdminById = async (id: string): Promise<Admin | null> => {
     where: { id, isDeleted: false },
   })
   if (!admin) {
-    throw new Error("Admin not found")
+    throw new ApiError(400, "Admin not found")
   }
   return admin
 }
@@ -92,7 +93,7 @@ const updateAdminById = async (
   })
 
   if (!existingAdmin) {
-    throw new Error("Admin not found")
+    throw new ApiError(400, "Admin not found")
   }
 
   const updatedAdmin = await prisma.admin.update({
@@ -109,7 +110,7 @@ const deleteAdmin = async (id: string): Promise<Admin | null> => {
   })
 
   if (!existingAdmin) {
-    throw new Error("Admin not found")
+    throw new ApiError(400, "Admin not found")
   }
 
   const result = await prisma.$transaction(async (prisma) => {
@@ -132,7 +133,7 @@ const softDeleteAdmin = async (id: string) => {
     where: { id, isDeleted: false },
   })
   if (!existingAdmin) {
-    throw new Error("Admin not found")
+    throw new ApiError(400, "Admin not found")
   }
 
   const result = await prisma.$transaction(async (prisma) => {

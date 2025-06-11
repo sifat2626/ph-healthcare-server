@@ -1,4 +1,5 @@
 import jwt, { Secret } from "jsonwebtoken"
+import ApiError from "../app/Errors/apiError"
 
 export const generateToken = (user: any, secret: Secret, expiresIn: any) => {
   const token = jwt.sign(
@@ -21,6 +22,6 @@ export const verifyToken = (token: string, secret: Secret) => {
     const decoded = jwt.verify(token, secret)
     return decoded
   } catch (error) {
-    throw new Error("Invalid token")
+    throw new ApiError(401, "Invalid token")
   }
 }

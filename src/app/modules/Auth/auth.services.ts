@@ -4,6 +4,7 @@ import jwt, { JwtPayload } from "jsonwebtoken"
 import { generateToken, verifyToken } from "../../../helpers/jwtHelpers"
 import { UserStatus } from "../../../../generated/prisma"
 import config from "../../../config"
+import ApiError from "../../Errors/apiError"
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const { email, password } = payload
@@ -15,7 +16,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
   const isCorrectPassword = await bcrypt.compare(password, user.password)
 
   if (!isCorrectPassword) {
-    throw new Error("Invalid email or password")
+    throw new ApiError(401, "Invalid email or password")
   }
 
   const accessToken = generateToken(
@@ -45,14 +46,14 @@ const refreshToken = async (token: string) => {
       config.jwt.refresh_token_secret as string
     ) as JwtPayload
   } catch (error) {
-    throw new Error("Invalid refresh token")
+    throw new ApiError(401, "Invalid refresh token")
   }
 
   const user = await prisma.user.findUniqueOrThrow({
     where: { id: decodedData.id, status: UserStatus.ACTIVE },
   })
   if (!user) {
-    throw new Error("User not found")
+    throw new ApiError(404, "User not found")
   }
 
   const accessToken = generateToken(
