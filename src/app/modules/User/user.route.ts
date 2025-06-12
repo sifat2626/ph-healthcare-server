@@ -11,7 +11,7 @@ const router = express.Router()
 router.post(
   "/",
   auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  validateRequest(UserValidationSchemas.createAdmin),
+  // validateRequest(UserValidationSchemas.createAdmin),
   upload.single("file"),
   UserController.createAdmin
 )

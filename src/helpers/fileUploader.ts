@@ -1,6 +1,7 @@
 import multer from "multer"
 import path from "path"
 import { v2 as cloudinary } from "cloudinary"
+import fs from "fs"
 
 cloudinary.config({
   cloud_name: "dlkloclrg",
@@ -24,7 +25,10 @@ export const uploadToCloudinary = async (file: Express.Multer.File) => {
     .catch((error) => {
       console.log(error)
     })
-
+    .finally(() => {
+      fs.unlinkSync(file.path) // Delete the file after upload
+    })
+  console.log("Upload Result:", uploadResult)
   return uploadResult
 }
 
