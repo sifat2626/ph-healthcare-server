@@ -7,6 +7,7 @@ import config from "../../../config"
 import ApiError from "../../Errors/apiError"
 import e from "express"
 import emailSender from "./emailSender"
+import { token } from "morgan"
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const { email, password } = payload
@@ -135,9 +136,43 @@ const forgotPassword = async (email: string) => {
   // return resetPasswordLink
 }
 
+const resetPassword = async (
+  token: string,
+  userId: string,
+  newPassword: string
+) => {
+  // Verify the token
+  let decodedData
+  try {
+    decodedData = verifyToken(
+      token,
+      config.jwt.reset_password_secret as string
+    ) as JwtPayload
+    console.log("Decoded Data:", decodedData.id)
+    console.log("User ID:", userId)
+  } catch (error) {
+    throw new ApiError(401, "Invalid reset password token")
+  }
+
+  // Check if the user ID matches
+  if (decodedData.id !== userId) {
+    throw new ApiError(403, "Unauthorized")
+  }
+
+  // Hash the new password
+  const hashedNewPassword = await bcrypt.hash(newPassword, 10)
+
+  // Update the user's password
+  await prisma.user.update({
+    where: { id: userId },
+    data: { password: hashedNewPassword },
+  })
+}
+
 export const AuthServices = {
   loginUser,
   refreshToken,
   changePassword,
   forgotPassword,
+  resetPassword,
 }
