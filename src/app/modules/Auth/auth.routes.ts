@@ -11,5 +11,6 @@ router.post(
   auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
   AuthController.changePassword
 )
+router.post("/forgot-password", AuthController.forgotPassword)
 
 export const AuthRoutes = router

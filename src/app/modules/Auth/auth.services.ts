@@ -5,6 +5,7 @@ import { generateToken, verifyToken } from "../../../helpers/jwtHelpers"
 import { UserStatus } from "../../../../generated/prisma"
 import config from "../../../config"
 import ApiError from "../../Errors/apiError"
+import e from "express"
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const { email, password } = payload
@@ -95,8 +96,29 @@ const changePassword = async (
 
   return updatedUser
 }
+
+const forgotPassword = async (email: string) => {
+  const user = await prisma.user.findUnique({
+    where: { email, status: UserStatus.ACTIVE },
+  })
+  if (!user) {
+    throw new ApiError(404, "User not found")
+  }
+
+  const resetPasswordToken = generateToken(
+    {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    },
+    config.jwt.reset_password_secret as string,
+    config.jwt.reset_password_expires_in as string
+  )
+}
+
 export const AuthServices = {
   loginUser,
   refreshToken,
   changePassword,
+  forgotPassword,
 }
