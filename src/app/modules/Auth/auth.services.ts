@@ -6,6 +6,7 @@ import { UserStatus } from "../../../../generated/prisma"
 import config from "../../../config"
 import ApiError from "../../Errors/apiError"
 import e from "express"
+import emailSender from "./emailSender"
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const { email, password } = payload
@@ -116,8 +117,22 @@ const forgotPassword = async (email: string) => {
   )
 
   const resetPasswordLink = `${config.reset_password_link}?userId=${user.id}&token=${resetPasswordToken}`
+  await emailSender(
+    user.email,
+    "Reset Password",
+    `
+    <div>
+      <h1>Reset Your Password</h1>
+      <p>Click the link below to reset your password:</p>
+      <button style="background-color:rgb(187, 223, 188); color: white; padding: 10px 20px; border: none; border-radius: 5px;">
+      <a href="${resetPasswordLink}" style="color: white; text-decoration: none;">Reset Password</a>
+      </button>
+      <p>If you did not request this, please ignore this email.</p>
+    </div>
+    `
+  )
 
-  return resetPasswordLink
+  // return resetPasswordLink
 }
 
 export const AuthServices = {
