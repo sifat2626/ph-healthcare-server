@@ -15,4 +15,5 @@ export default {
     reset_password_secret: process.env.RESET_PASSWORD_SECRET,
     reset_password_expires_in: process.env.RESET_PASSWORD_EXPIRES_IN,
   },
+  reset_password_link: process.env.RESET_PASSWORD_LINK,
 }
