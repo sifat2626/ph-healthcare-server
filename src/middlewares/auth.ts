@@ -22,8 +22,7 @@ const auth = (...roles: string[]) => {
           "you are not authorized to access this resource"
         )
       }
-
-      // req.user = verifiedUser
+      req.user = verifiedUser
       next()
     } catch (error) {}
   }

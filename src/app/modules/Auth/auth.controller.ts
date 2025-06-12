@@ -1,3 +1,4 @@
+import { NextFunction, Request, Response } from "express"
 import catchAsync from "../../../shared/catchAsync"
 import sendResponse from "../../../shared/sendResponse"
 import { AuthServices } from "./auth.services"
@@ -36,7 +37,25 @@ const refreshToken = catchAsync(async (req, res, next) => {
   })
 })
 
+const changePassword = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user.id
+    const { oldPassword, newPassword } = req.body
+    const updatedUser = await AuthServices.changePassword(
+      userId,
+      oldPassword,
+      newPassword
+    )
+    sendResponse(res, {
+      statusCode: 200,
+      message: "Password changed successfully",
+      data: updatedUser,
+    })
+  }
+)
+
 export const AuthController = {
   loginUser,
   refreshToken,
+  changePassword,
 }
