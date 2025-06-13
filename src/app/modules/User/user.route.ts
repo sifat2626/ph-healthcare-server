@@ -15,5 +15,12 @@ router.post(
   upload.single("file"),
   UserController.createAdmin
 )
+router.post(
+  "/",
+  auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  // validateRequest(UserValidationSchemas.createAdmin),
+  upload.single("file"),
+  UserController.createDoctor
+)
 
 export const UserRoutes = router

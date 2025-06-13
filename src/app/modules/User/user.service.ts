@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole } from "../../../../generated/prisma"
+import { Doctor, PrismaClient, UserRole } from "../../../../generated/prisma"
 import * as bcrypt from "bcrypt"
 import prisma from "../../../shared/prisma"
 
@@ -25,6 +25,37 @@ const createAdmin = async (payload: any) => {
   return result
 }
 
+const createDoctor = async (payload: any) => {
+  const hashedPassword = await bcrypt.hash(payload.password, 10)
+  const userData = {
+    email: payload.email,
+    password: hashedPassword,
+    role: UserRole.DOCTOR,
+  }
+
+  const result = await prisma.$transaction(async (prisma) => {
+    const createdUserData = await prisma.user.create({
+      data: userData,
+    })
+
+    const createdDoctorData = await prisma.doctor.create({
+      data: {
+        ...payload,
+        user: {
+          connect: {
+            email: createdUserData.email,
+          },
+        },
+      },
+    })
+
+    return createdDoctorData
+  })
+
+  return result
+}
+
 export const UserService = {
   createAdmin,
+  createDoctor,
 }

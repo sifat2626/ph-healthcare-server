@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import { UserService } from "./user.service"
 import { uploadToCloudinary } from "../../../helpers/fileUploader"
+import catchAsync from "../../../shared/catchAsync"
 
 const createAdmin = async (req: Request, res: Response) => {
   try {
@@ -28,6 +29,25 @@ const createAdmin = async (req: Request, res: Response) => {
   }
 }
 
+const createDoctor = catchAsync(async (req: Request, res: Response) => {
+  const payload = JSON.parse(req.body.data)
+  const file = req.file
+
+  if (file) {
+    const upload = await uploadToCloudinary(file)
+    payload.profilePhoto = upload?.secure_url
+  }
+
+  const result = await UserService.createDoctor(payload)
+
+  res.status(200).json({
+    message: "Doctor created successfully",
+    data: result,
+    success: true,
+  })
+})
+
 export const UserController = {
   createAdmin,
+  createDoctor,
 }
