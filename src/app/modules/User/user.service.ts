@@ -26,9 +26,10 @@ const createAdmin = async (payload: any) => {
 }
 
 const createDoctor = async (payload: any) => {
-  const hashedPassword = await bcrypt.hash(payload.password, 10)
+  const { password, email, ...doctorData } = payload
+  const hashedPassword = await bcrypt.hash(password, 10)
   const userData = {
-    email: payload.email,
+    email: email,
     password: hashedPassword,
     role: UserRole.DOCTOR,
   }
@@ -40,7 +41,7 @@ const createDoctor = async (payload: any) => {
 
     const createdDoctorData = await prisma.doctor.create({
       data: {
-        ...payload,
+        ...doctorData,
         user: {
           connect: {
             email: createdUserData.email,

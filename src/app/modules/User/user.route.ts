@@ -9,14 +9,14 @@ import { UserValidationSchemas } from "./user.validation"
 const router = express.Router()
 
 router.post(
-  "/",
+  "/create-admin",
   auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   // validateRequest(UserValidationSchemas.createAdmin),
   upload.single("file"),
   UserController.createAdmin
 )
 router.post(
-  "/",
+  "/create-doctor",
   auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   // validateRequest(UserValidationSchemas.createAdmin),
   upload.single("file"),
