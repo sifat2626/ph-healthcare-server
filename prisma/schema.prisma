@@ -65,6 +65,16 @@ model Doctor {
   @@map("doctors")
 }
 
+model Patient {
+  id String @id @default(uuid())
+  name String
+  email String @unique
+  profilePhoto String?
+  contactNumber String?
+  age Int?
+  gender Gender?
+}
+
 enum Gender{
   MALE
   FEMALE
