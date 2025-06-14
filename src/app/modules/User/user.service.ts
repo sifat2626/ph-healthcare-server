@@ -56,7 +56,39 @@ const createDoctor = async (payload: any) => {
   return result
 }
 
+const createPatient = async (payload: any) => {
+  const { password, email, ...patientData } = payload
+  const hashedPassword = await bcrypt.hash(password, 10)
+  const userData = {
+    email: email,
+    password: hashedPassword,
+    role: UserRole.PATIENT,
+  }
+
+  const result = await prisma.$transaction(async (prisma) => {
+    const createdUserData = await prisma.user.create({
+      data: userData,
+    })
+
+    const createdPatientData = await prisma.patient.create({
+      data: {
+        ...patientData,
+        user: {
+          connect: {
+            email: createdUserData.email,
+          },
+        },
+      },
+    })
+
+    return createdPatientData
+  })
+
+  return result
+}
+
 export const UserService = {
   createAdmin,
   createDoctor,
+  createPatient,
 }

@@ -47,7 +47,26 @@ const createDoctor = catchAsync(async (req: Request, res: Response) => {
   })
 })
 
+const createPatient = catchAsync(async (req: Request, res: Response) => {
+  const payload = JSON.parse(req.body.data)
+  const file = req.file
+
+  if (file) {
+    const upload = await uploadToCloudinary(file)
+    payload.profilePhoto = upload?.secure_url
+  }
+
+  const result = await UserService.createPatient(payload)
+
+  res.status(200).json({
+    message: "Patient created successfully",
+    data: result,
+    success: true,
+  })
+})
+
 export const UserController = {
   createAdmin,
   createDoctor,
+  createPatient,
 }

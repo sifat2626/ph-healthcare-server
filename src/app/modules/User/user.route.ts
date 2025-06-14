@@ -23,4 +23,11 @@ router.post(
   UserController.createDoctor
 )
 
+router.post(
+  "/create-patient",
+  // validateRequest(UserValidationSchemas.createAdmin),
+  upload.single("file"),
+  UserController.createPatient
+)
+
 export const UserRoutes = router
