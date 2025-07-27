@@ -1,11 +1,11 @@
-import { Server } from "http"
 import app from "./app"
+import { Server } from "http"
 
-const port = 3000
+const PORT = process.env.PORT || 3000
 
 async function main() {
-  const server: Server = app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`)
+  const server: Server = app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`)
   })
 }
 

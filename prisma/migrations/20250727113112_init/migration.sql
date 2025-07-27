@@ -9,7 +9,7 @@ CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "role" "UserRole" NOT NULL,
+    "role" "UserRole" NOT NULL DEFAULT 'PATIENT',
     "needsPasswordChange" BOOLEAN NOT NULL DEFAULT false,
     "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -21,9 +21,10 @@ CREATE TABLE "users" (
 -- CreateTable
 CREATE TABLE "admins" (
     "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "profilePhoto" TEXT,
+    "profilePicture" TEXT,
     "contactNumber" TEXT,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -34,6 +35,9 @@ CREATE TABLE "admins" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "admins_userId_key" ON "admins"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "admins_email_key" ON "admins"("email");
