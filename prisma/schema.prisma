@@ -42,7 +42,6 @@ enum UserStatus {
 
 model Admin {
   id        String   @id @default(uuid())
-  userId    String   @unique
   name      String
   email     String   @unique
   profilePicture String?
