@@ -2,6 +2,7 @@ import express, { Application, Request, Response } from "express"
 import cors from "cors"
 import morgan from "morgan"
 import { userRoutes } from "./app/modules/User/user.routes"
+import { AdminRoutes } from "./app/modules/User/Admin/admin.routes"
 
 const app: Application = express()
 app.use(cors())
@@ -17,5 +18,6 @@ app.get("/", (req: Request, res: Response) => {
 })
 
 app.use("/api/v1/users", userRoutes)
+app.use("/api/v1/admins", AdminRoutes)
 
 export default app
