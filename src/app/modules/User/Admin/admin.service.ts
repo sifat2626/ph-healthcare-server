@@ -54,6 +54,12 @@ const getByIdFromDB = async (id: string) => {
 }
 
 const updateAdminToDB = async (id: string, payload: Partial<Admin>) => {
+  const existingAdmin = await prisma.admin.findUnique({
+    where: { id },
+  })
+  if (!existingAdmin) {
+    throw new Error("Admin not found")
+  }
   const result = await prisma.admin.update({
     where: { id },
     data: payload,
@@ -61,8 +67,33 @@ const updateAdminToDB = async (id: string, payload: Partial<Admin>) => {
   return result
 }
 
+const deleteAdminFromDB = async (id: string) => {
+  const existingAdmin = await prisma.admin.findUnique({
+    where: { id },
+  })
+  if (!existingAdmin) {
+    throw new Error("Admin not found")
+  }
+  const result = await prisma.$transaction(async (tx) => {
+    const result = await tx.admin.delete({
+      where: { id },
+    })
+
+    await tx.user.delete({
+      where: {
+        email: existingAdmin.email,
+      },
+    })
+
+    return result
+  })
+
+  return result
+}
+
 export const AdminService = {
   getAllAdmins,
   getByIdFromDB,
   updateAdminToDB,
+  deleteAdminFromDB,
 }
