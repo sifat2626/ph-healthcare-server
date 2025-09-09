@@ -4,6 +4,7 @@ import morgan from "morgan"
 import router from "./app/routes"
 import httpStatus from "http-status"
 import { globalErrorHandler } from "./app/middlewares/globalErrorHandler"
+import e from "express"
 
 const app: Application = express()
 app.use(cors())
@@ -20,5 +21,16 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/v1", router)
 app.use(globalErrorHandler)
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.status(httpStatus.NOT_FOUND).json({
+    message: "API Not Found",
+    success: false,
+    error: {
+      path: req.originalUrl,
+      message: "The requested API endpoint does not exist",
+    },
+  })
+})
 
 export default app
