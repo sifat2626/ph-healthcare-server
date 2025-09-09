@@ -3,6 +3,7 @@ import cors from "cors"
 import morgan from "morgan"
 import router from "./app/routes"
 import httpStatus from "http-status"
+import { globalErrorHandler } from "./app/middlewares/globalErrorHandler"
 
 const app: Application = express()
 app.use(cors())
@@ -18,12 +19,6 @@ app.get("/", (req: Request, res: Response) => {
 })
 
 app.use("/api/v1", router)
-app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-  res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-    message: error.name || "Something went wrong",
-    success: false,
-    error: error.message,
-  })
-})
+app.use(globalErrorHandler)
 
 export default app
