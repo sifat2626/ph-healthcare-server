@@ -1,11 +1,15 @@
-import express, { Request, Response } from "express"
+import express, { NextFunction, Request, Response } from "express"
 import { AdminService } from "./admin.service"
 import { adminFilterableFields } from "./admin.constant"
 import { pick } from "../../../shared/pick"
 import { sendResponse } from "../../../shared/sendResponse"
 import httpStatus from "http-status"
 
-const getAllFromDB = async (req: Request, res: Response) => {
+const getAllFromDB = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const filters = pick(req.query, adminFilterableFields)
 
@@ -20,15 +24,15 @@ const getAllFromDB = async (req: Request, res: Response) => {
       data: result.data,
     })
   } catch (error: any) {
-    res.status(500).json({
-      message: "Error retrieving admins",
-      success: false,
-      error: error.message,
-    })
+    next(error)
   }
 }
 
-const getByIdFromDB = async (req: Request, res: Response) => {
+const getByIdFromDB = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { id } = req.params
     const result = await AdminService.getByIdFromDB(id)
@@ -45,15 +49,11 @@ const getByIdFromDB = async (req: Request, res: Response) => {
       data: result,
     })
   } catch (error: any) {
-    res.status(500).json({
-      message: "Error retrieving admin",
-      success: false,
-      error: error.message,
-    })
+    next(error)
   }
 }
 
-const updateAdmin = async (req: Request, res: Response) => {
+const updateAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params
     const payload = req.body
@@ -65,15 +65,11 @@ const updateAdmin = async (req: Request, res: Response) => {
       data: result,
     })
   } catch (error: any) {
-    res.status(500).json({
-      message: "Error updating admin",
-      success: false,
-      error: error.message,
-    })
+    next(error)
   }
 }
 
-const deleteAdmin = async (req: Request, res: Response) => {
+const deleteAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params
     const result = await AdminService.deleteAdminFromDB(id)
@@ -84,15 +80,15 @@ const deleteAdmin = async (req: Request, res: Response) => {
       data: result,
     })
   } catch (error: any) {
-    res.status(500).json({
-      message: "Error deleting admin",
-      success: false,
-      error: error.message,
-    })
+    next(error)
   }
 }
 
-const softDeleteAdmin = async (req: Request, res: Response) => {
+const softDeleteAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { id } = req.params
     const result = await AdminService.softDeleteAdminFromDB(id)
@@ -103,11 +99,7 @@ const softDeleteAdmin = async (req: Request, res: Response) => {
       data: result,
     })
   } catch (error: any) {
-    res.status(500).json({
-      message: "Error soft-deleting admin",
-      success: false,
-      error: error.message,
-    })
+    next(error)
   }
 }
 

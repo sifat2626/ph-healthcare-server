@@ -1,8 +1,8 @@
 import { userService } from "./user.service"
-import { Request, Response } from "express"
+import { NextFunction, Request, Response } from "express"
 import httpStatus from "http-status"
 
-const createAdmin = async (req: Request, res: Response) => {
+const createAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await userService.createAdmin(req.body)
     res.status(httpStatus.OK).json({
@@ -11,10 +11,7 @@ const createAdmin = async (req: Request, res: Response) => {
       data: result,
     })
   } catch (error: any) {
-    res.status(500).json({
-      message: error.name || "Error creating admin",
-      success: false,
-    })
+    next(error)
   }
 }
 
