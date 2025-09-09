@@ -1,12 +1,12 @@
+import { calculatePagination } from "../../../shared/calculatePagination"
 import {
   Admin,
   Prisma,
   PrismaClient,
   UserStatus,
-} from "../../../../../generated/prisma"
-import { calculatePagination } from "../../../../shared/calculatePagination"
-import { prisma } from "../../../../shared/prisma"
+} from "../../../../generated/prisma"
 import { adminSearchableFields } from "./admin.constant"
+import { prisma } from "../../../shared/prisma"
 
 const getAllAdmins = async (params: any, options: any) => {
   const { limit, skip, orderBy } = calculatePagination(options)
@@ -51,16 +51,16 @@ const getAllAdmins = async (params: any, options: any) => {
   }
 }
 
-const getByIdFromDB = async (id: string) => {
+const getByIdFromDB = async (id: string): Promise<Admin | null> => {
   const result = await prisma.admin.findUnique({
-    where: { id },
+    where: { id, isDeleted: false },
   })
   return result
 }
 
 const updateAdminToDB = async (id: string, payload: Partial<Admin>) => {
   const existingAdmin = await prisma.admin.findUnique({
-    where: { id },
+    where: { id, isDeleted: false },
   })
   if (!existingAdmin) {
     throw new Error("Admin not found")
@@ -98,7 +98,7 @@ const deleteAdminFromDB = async (id: string) => {
 
 const softDeleteAdminFromDB = async (id: string) => {
   const existingAdmin = await prisma.admin.findUnique({
-    where: { id },
+    where: { id, isDeleted: false },
   })
   if (!existingAdmin) {
     throw new Error("Admin not found")
