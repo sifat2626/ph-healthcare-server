@@ -7,8 +7,9 @@ import {
 } from "../../../../generated/prisma"
 import { adminSearchableFields } from "./admin.constant"
 import { prisma } from "../../../shared/prisma"
+import { IAdminFilterRequest } from "./admin.interface"
 
-const getAllAdmins = async (params: any, options: any) => {
+const getAllAdmins = async (params: IAdminFilterRequest, options: any) => {
   const { limit, skip, orderBy } = calculatePagination(options)
   const { searchTerm, ...filterData } = params
   const andConditions: Prisma.AdminWhereInput[] = []
@@ -28,7 +29,7 @@ const getAllAdmins = async (params: any, options: any) => {
     andConditions.push({
       AND: Object.keys(filterData).map((key) => ({
         [key]: {
-          equals: filterData[key],
+          equals: (filterData as any)[key],
         },
       })),
     })
