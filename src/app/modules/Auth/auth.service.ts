@@ -1,7 +1,8 @@
 import { prisma } from "../../../shared/prisma"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import { generateToken } from "../../../shared/jwtHelpers"
+import { generateToken, verifyToken } from "../../../shared/jwtHelpers"
+import { UserStatus } from "../../../../generated/prisma"
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const userData = await prisma.user.findUnique({
@@ -34,17 +35,14 @@ const loginUser = async (payload: { email: string; password: string }) => {
 }
 
 const refreshToken = async (token: string) => {
-  const decodedData = jwt.verify(
-    token,
-    process.env.REFRESH_TOKEN_SECRET as string
-  ) as { userId: string; email: string; role: string }
+  const decodedData = verifyToken(token)
 
   if (!decodedData) {
     throw new Error("Invalid refresh token")
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: decodedData.userId },
+    where: { id: decodedData.userId, status: UserStatus.ACTIVE },
   })
 
   if (!user) {

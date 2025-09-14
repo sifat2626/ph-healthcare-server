@@ -17,3 +17,15 @@ export const generateToken = (user: {
   )
   return { accessToken, refreshToken }
 }
+
+export const verifyToken = (token: string) => {
+  const decoded = jwt.verify(
+    token,
+    process.env.REFRESH_TOKEN_SECRET as string
+  ) as {
+    userId: string
+    email: string
+    role: string
+  }
+  return decoded
+}
