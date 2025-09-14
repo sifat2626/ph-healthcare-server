@@ -33,6 +33,34 @@ const loginUser = async (payload: { email: string; password: string }) => {
   }
 }
 
+const refreshToken = async (token: string) => {
+  const decodedData = jwt.verify(
+    token,
+    process.env.REFRESH_TOKEN_SECRET as string
+  ) as { userId: string; email: string; role: string }
+
+  if (!decodedData) {
+    throw new Error("Invalid refresh token")
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: decodedData.userId },
+  })
+
+  if (!user) {
+    throw new Error("User not found")
+  }
+
+  const { accessToken, refreshToken } = generateToken({
+    id: user.id,
+    email: user.email,
+    role: user.role,
+  })
+
+  return { accessToken, refreshToken }
+}
+
 export const AuthService = {
   loginUser,
+  refreshToken,
 }
