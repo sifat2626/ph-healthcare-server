@@ -26,13 +26,13 @@ export const generateToken = (user: {
 }
 
 export const verifyToken = (token: string) => {
-  const decoded = jwt.verify(
-    token,
-    config.jwt.refreshTokenSecret as string
-  ) as {
+  console.log("Verifying token:", token) // Debugging line
+  const decoded = jwt.verify(token, config.jwt.jwtSecret as string) as {
     userId: string
     email: string
     role: string
   }
+
+  console.log("Decoded token:", decoded) // Debugging line
   return decoded
 }
