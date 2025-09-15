@@ -2,6 +2,7 @@ import { prisma } from "../../../shared/prisma"
 import bcrypt from "bcrypt"
 import { generateToken, verifyToken } from "../../../shared/jwtHelpers"
 import { UserStatus } from "../../../../generated/prisma"
+import ApiError from "../../errors/ApiError"
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const userData = await prisma.user.findUnique({
@@ -9,7 +10,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
   })
 
   if (!userData) {
-    throw new Error("User not found")
+    throw new ApiError(404, "User not found")
   }
 
   const isPasswordValid = await bcrypt.compare(
@@ -17,7 +18,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
     userData.password
   )
   if (!isPasswordValid) {
-    throw new Error("Invalid password")
+    throw new ApiError(401, "Invalid password")
   }
 
   const { accessToken, refreshToken } = generateToken({
@@ -37,7 +38,7 @@ const refreshToken = async (token: string) => {
   const decodedData = verifyToken(token)
 
   if (!decodedData) {
-    throw new Error("Invalid refresh token")
+    throw new ApiError(401, "Invalid refresh token")
   }
 
   const user = await prisma.user.findUnique({
@@ -45,7 +46,7 @@ const refreshToken = async (token: string) => {
   })
 
   if (!user) {
-    throw new Error("User not found")
+    throw new ApiError(404, "User not found")
   }
 
   const { accessToken, refreshToken } = generateToken({

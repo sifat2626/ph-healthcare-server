@@ -2,38 +2,9 @@ import express from "express"
 import { userController } from "./user.controller"
 import multer from "multer"
 import { UserRole } from "../../../../generated/prisma"
-import { verifyToken } from "../../../shared/jwtHelpers"
+import { auth } from "../../middlewares/auth"
 
 const router = express.Router()
-
-const auth = (...roles: string[]) => {
-  return (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => {
-    try {
-      const token = req.headers.authorization
-      if (!token) {
-        throw new Error("You are not authorized")
-      }
-
-      const verifiedUser = verifyToken(token)
-      if (!verifiedUser) {
-        throw new Error("You are not authorized")
-      }
-
-      if (roles.length && !roles.includes(verifiedUser.role)) {
-        throw new Error("You are not authorized")
-      }
-
-      // req.user = verifiedUser
-      next()
-    } catch (error) {
-      next(error)
-    }
-  }
-}
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {

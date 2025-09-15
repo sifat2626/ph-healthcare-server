@@ -8,6 +8,7 @@ import {
 import { adminSearchableFields } from "./admin.constant"
 import { prisma } from "../../../shared/prisma"
 import { IAdminFilterRequest } from "./admin.interface"
+import ApiError from "../../errors/ApiError"
 
 const getAllAdmins = async (params: IAdminFilterRequest, options: any) => {
   const { limit, skip, orderBy } = calculatePagination(options)
@@ -64,7 +65,7 @@ const updateAdminToDB = async (id: string, payload: Partial<Admin>) => {
     where: { id, isDeleted: false },
   })
   if (!existingAdmin) {
-    throw new Error("Admin not found")
+    throw new ApiError(404, "Admin not found")
   }
   const result = await prisma.admin.update({
     where: { id },
@@ -78,7 +79,7 @@ const deleteAdminFromDB = async (id: string) => {
     where: { id },
   })
   if (!existingAdmin) {
-    throw new Error("Admin not found")
+    throw new ApiError(404, "Admin not found")
   }
   const result = await prisma.$transaction(async (tx) => {
     const result = await tx.admin.delete({
@@ -102,7 +103,7 @@ const softDeleteAdminFromDB = async (id: string) => {
     where: { id, isDeleted: false },
   })
   if (!existingAdmin) {
-    throw new Error("Admin not found")
+    throw new ApiError(404, "Admin not found")
   }
   const result = await prisma.$transaction(async (tx) => {
     const result = await tx.admin.update({
