@@ -1,3 +1,4 @@
+import config from "../config"
 import jwt from "jsonwebtoken"
 
 export const generateToken = (user: {
@@ -7,13 +8,19 @@ export const generateToken = (user: {
 }) => {
   const accessToken = jwt.sign(
     { userId: user.id, email: user.email, role: user.role },
-    process.env.JWT_SECRET as string,
-    { expiresIn: "5m", algorithm: "HS256" }
+    config.jwt.jwtSecret as string,
+    {
+      expiresIn: "5m",
+      algorithm: "HS256",
+    }
   )
   const refreshToken = jwt.sign(
     { userId: user.id, email: user.email, role: user.role },
-    process.env.REFRESH_TOKEN_SECRET as string,
-    { expiresIn: "30d", algorithm: "HS256" }
+    config.jwt.refreshTokenSecret as string,
+    {
+      expiresIn: "70d",
+      algorithm: "HS256",
+    }
   )
   return { accessToken, refreshToken }
 }
@@ -21,7 +28,7 @@ export const generateToken = (user: {
 export const verifyToken = (token: string) => {
   const decoded = jwt.verify(
     token,
-    process.env.REFRESH_TOKEN_SECRET as string
+    config.jwt.refreshTokenSecret as string
   ) as {
     userId: string
     email: string

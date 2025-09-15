@@ -1,6 +1,5 @@
 import { prisma } from "../../../shared/prisma"
 import bcrypt from "bcrypt"
-import jwt from "jsonwebtoken"
 import { generateToken, verifyToken } from "../../../shared/jwtHelpers"
 import { UserStatus } from "../../../../generated/prisma"
 
