@@ -18,4 +18,13 @@ router.post(
   userController.createAdmin
 )
 
+router.post(
+  "/create-doctor",
+  fileUploader.upload.single("file"),
+  parseBodyMiddleware,
+  validateRequest(userValidation.createDoctor),
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+  userController.createDoctor
+)
+
 export const userRoutes = router
