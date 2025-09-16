@@ -1,10 +1,11 @@
 import bcrypt from "bcrypt"
 import { prisma } from "../../../shared/prisma"
-import { Prisma, UserRole } from "../../../../generated/prisma"
+import { Prisma, UserRole, UserStatus } from "../../../../generated/prisma"
 import config from "../../../config"
 import { fileUploader } from "../../utils/fileUploader"
 import { calculatePagination } from "../../../shared/calculatePagination"
 import { userSearchableFields } from "./user.constant"
+import ApiError from "../../errors/ApiError"
 
 const createAdmin = async (req: any) => {
   console.log("req.body", req.body)
@@ -168,9 +169,25 @@ const getAllUsers = async (params: any, options: any) => {
   }
 }
 
+const updateUserStatus = async (id: string, status: UserStatus) => {
+  const existingUser = await prisma.user.findUnique({
+    where: { id },
+  })
+  if (!existingUser) {
+    throw new ApiError(404, "User not found")
+  }
+
+  const result = await prisma.user.update({
+    where: { id },
+    data: { status },
+  })
+  return result
+}
+
 export const userService = {
   createAdmin,
   createDoctor,
   createPatient,
+  updateUserStatus,
   getAllUsers,
 }

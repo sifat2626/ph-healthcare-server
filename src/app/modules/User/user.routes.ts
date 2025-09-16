@@ -42,4 +42,10 @@ router.get(
   userController.getAllFromDB
 )
 
+router.patch(
+  "/:id/status",
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+  userController.updateUserStatus
+)
+
 export const userRoutes = router
