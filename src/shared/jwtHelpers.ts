@@ -10,7 +10,7 @@ export const generateToken = (user: {
     { userId: user.id, email: user.email, role: user.role },
     config.jwt.jwtSecret as string,
     {
-      expiresIn: "5m",
+      expiresIn: "30d",
       algorithm: "HS256",
     }
   )

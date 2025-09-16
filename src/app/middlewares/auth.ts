@@ -3,7 +3,7 @@ import { verifyToken } from "../../shared/jwtHelpers"
 import ApiError from "../errors/ApiError"
 
 export const auth = (...roles: string[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request & { user?: any }, res: Response, next: NextFunction) => {
     try {
       const token = req.headers.authorization
       if (!token) {
@@ -16,10 +16,10 @@ export const auth = (...roles: string[]) => {
       }
 
       if (roles.length && !roles.includes(verifiedUser.role)) {
-        throw new ApiError(403, "You are not authorized")
+        throw new ApiError(403, "Forbidden!")
       }
 
-      // req.user = verifiedUser
+      req.user = verifiedUser
       next()
     } catch (error) {
       next(error)
