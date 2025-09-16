@@ -36,4 +36,10 @@ router.post(
   userController.createPatient
 )
 
+router.get(
+  "/",
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+  userController.getAllFromDB
+)
+
 export const userRoutes = router
