@@ -5,7 +5,8 @@ import config from "../../../config"
 import { fileUploader } from "../../utils/fileUploader"
 
 const createAdmin = async (req: any) => {
-  const data = JSON.parse(req.body.data)
+  console.log("req.body", req.body)
+  const data = req.body
   const file = req.file
 
   if (file) {

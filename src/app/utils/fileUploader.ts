@@ -1,6 +1,7 @@
 import multer from "multer"
 import path from "path"
 import { v2 as cloudinary } from "cloudinary"
+import fs from "fs"
 
 cloudinary.config({
   cloud_name: "dlkloclrg",
@@ -13,6 +14,10 @@ const uploadToCloudinary = async (file: any) => {
     const result = await cloudinary.uploader.upload(file.path, {
       folder: "user_uploads", // Optional: specify a folder in Cloudinary
     })
+
+    // Delete the local file after uploading
+    fs.unlinkSync(file.path)
+
     return result.secure_url // Return the URL of the uploaded image
   } catch (error) {
     console.error("Error uploading to Cloudinary:", error)

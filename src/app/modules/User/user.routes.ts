@@ -3,12 +3,17 @@ import { userController } from "./user.controller"
 import { UserRole } from "../../../../generated/prisma"
 import { auth } from "../../middlewares/auth"
 import { fileUploader } from "../../utils/fileUploader"
+import { validateRequest } from "../../../shared/validateRequest"
+import { userValidation } from "./user.validation"
+import { parseBodyMiddleware } from "../../middlewares/parseBodyMiddleware"
 
 const router = express.Router()
 
 router.post(
   "/create-admin",
   fileUploader.upload.single("file"),
+  parseBodyMiddleware,
+  validateRequest(userValidation.createAdmin),
   auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
   userController.createAdmin
 )

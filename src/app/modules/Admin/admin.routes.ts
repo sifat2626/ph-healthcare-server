@@ -1,19 +1,13 @@
 import express, { NextFunction, Request, Response } from "express"
 import { AdminController } from "./admin.controller"
-import { z, ZodObject } from "zod"
 import { validateRequest } from "../../../shared/validateRequest"
 import { auth } from "../../middlewares/auth"
 import { UserRole } from "../../../../generated/prisma"
+import { update } from "./admin.validation"
 
 const router = express.Router()
 
 // Zod schema with "body" layer
-const update = z.object({
-  body: z.object({
-    name: z.string().optional(),
-    contactNumber: z.string().optional(),
-  }),
-})
 
 // Routes
 router.get(
