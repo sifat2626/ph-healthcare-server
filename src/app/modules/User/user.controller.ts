@@ -5,6 +5,7 @@ import { catchAsync } from "../../../shared/catchAsync"
 import { pick } from "../../../shared/pick"
 import { sendResponse } from "../../../shared/sendResponse"
 import { userFilterableFields } from "./user.constant"
+import { UserRole } from "../../../../generated/prisma"
 
 const createAdmin = catchAsync(async (req: Request, res: Response) => {
   const result = await userService.createAdmin(req)
@@ -60,10 +61,23 @@ const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
   })
 })
 
+const getMyProfile = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.id
+  const role = req.user.role
+  const result = await userService.getMyProfile(userId, role)
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    message: "User profile retrieved successfully",
+    success: true,
+    data: result,
+  })
+})
+
 export const userController = {
   createAdmin,
   createDoctor,
   createPatient,
   updateUserStatus,
+  getMyProfile,
   getAllFromDB,
 }

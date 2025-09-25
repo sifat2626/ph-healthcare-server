@@ -184,10 +184,33 @@ const updateUserStatus = async (id: string, status: UserStatus) => {
   return result
 }
 
+const getMyProfile = async (userId: string, role: UserRole) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      needsPasswordChange: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
+      doctor: true,
+      admin: true,
+      patient: true,
+    },
+  })
+  if (!user) {
+    throw new ApiError(404, "User not found")
+  }
+  return user
+}
+
 export const userService = {
   createAdmin,
   createDoctor,
   createPatient,
+  getMyProfile,
   updateUserStatus,
   getAllUsers,
 }
